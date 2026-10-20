@@ -30,9 +30,11 @@ export default function Column({ column, tasks, onCardClick, onDragOver, onDrop,
             onDragStart={onDragStart}
           />
         ))}
+
         {tasks.length === 0 && (
-          <div className="h-24 border border-dashed border-[#252E45] rounded-lg flex items-center justify-center text-xs text-slate-600 font-mono">
-            Drop task here
+          <div className="h-32 border border-dashed border-[#252E45] rounded-lg flex flex-col items-center justify-center text-slate-500 space-y-1">
+            <span className="text-xs font-medium text-slate-400">No tasks in {column.title}</span>
+            <span className="text-[10px] font-mono text-slate-600">Column is empty</span>
           </div>
         )}
       </div>
