@@ -1,9 +1,12 @@
 // src/db.js
 
 const DB_NAME = 'VibeBoardDB';
-const DB_VERSION = 2; // Incremented version to trigger onupgradeneeded for existing users
+const DB_VERSION = 2; // Incremented version to clear old seed data for existing users
 const STORE_NAME = 'tasks';
 
+/**
+ * Opens or initializes the local IndexedDB database.
+ */
 function initDB() {
   return new Promise((resolve, reject) => {
     if (!window.indexedDB) {
@@ -30,7 +33,6 @@ function initDB() {
 
     request.onsuccess = (e) => resolve(e.target.result);
   });
-}
 }
 
 /**
@@ -80,5 +82,30 @@ export async function saveTaskToDB(task) {
     }
     localStorage.setItem('vibeboard_tasks', JSON.stringify(tasks));
     return task;
+  }
+}
+
+/**
+ * Removes a task from the local database.
+ */
+export async function deleteTaskFromDB(taskId) {
+  try {
+    const db = await initDB();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(STORE_NAME, 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.delete(taskId);
+
+      request.onsuccess = () => resolve(taskId);
+      request.onerror = (e) => reject(e.target.error);
+    });
+  } catch (err) {
+    // Fallback sync to localStorage
+    const saved = localStorage.getItem('vibeboard_tasks');
+    if (saved) {
+      const tasks = JSON.parse(saved).filter((t) => t.id !== taskId);
+      localStorage.setItem('vibeboard_tasks', JSON.stringify(tasks));
+    }
+    return taskId;
   }
 }
