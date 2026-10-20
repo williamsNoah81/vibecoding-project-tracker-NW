@@ -166,4 +166,21 @@ The hackathon is "done" when all 13 milestone tags are pushed to your repo and v
 
 ---
 
+## Functional Requirements
+
+- Tasks can be added to a board of four columns
+- Tasks can be added, edited, deleted and moved between columns
+- Context should be able to be added to tasks, with the AI tool used also linked
+- There should be links to deliverables
+- Team member should be assigned to tasks
+
+
+## Non-functional Requirements
+
+- Features and bugs should be visually different, with either a tag or a colour
+- Tasks are colour coded based on proximity to deadline
+- 
+
+## Data Requirements
+
 *PRD version: hackathon-starter v1 · maintained by Prof. Dr. Ignacio Alvarez*
