@@ -12,7 +12,7 @@
 
 One sentence that captures the feeling the tracker should leave you with.
 
-`<TODO>`
+`Structured and simple`
 
 Two or three references that capture the vibe (links to dribbble shots, screenshots of apps you admire, Pinterest boards — anything visual):
 
@@ -32,12 +32,12 @@ These are the colors the build milestones will reference. Once chosen, paste the
 
 | Token | Hex | Where it shows up |
 |---|---|---|
-| `brand-primary` | `<TODO>` | Header, "+" button, focus rings |
-| `brand-accent` | `<TODO>` | Highlights, hover states, links |
-| `surface-page` | `<TODO>` | Page background |
-| `surface-card` | `<TODO>` | Card background |
-| `text-primary` | `<TODO>` | Body text |
-| `text-muted` | `<TODO>` | Captions, dates, counts |
+| `brand-primary` | `#6366F1` | Header, "+" button, focus rings |
+| `brand-accent` | `#0D9488` | Highlights, hover states, links |
+| `surface-page` | `#090D16` | Page background |
+| `surface-card` | `#1E293B` | Card background |
+| `text-primary` | `#DAE2FD` | Body text |
+| `text-muted` | `#A3ABC4` | Captions, dates, counts |
 
 ### Task type (M6 `tag-style`)
 
@@ -50,10 +50,13 @@ These are the colors the build milestones will reference. Once chosen, paste the
 
 | Token | Hex | When used |
 |---|---|---|
-| `due-safe` | `<TODO>` | More than 2 days out |
-| `due-warning` | `<TODO>` | Less than 24 hours |
-| `due-overdue` | `<TODO>` | Past due |
-| `due-neutral` | `<TODO>` | Done (overrides date) |
+
+**Universal Construction:** Composed of an SVG icon, monospace text label (e.g., `CRIT <24H`, `DUE 2D`, `SAFE 5D`), and an outer outline shape.
+
+| `due-safe` | `**Safe Chip:** Border `1px solid #0D9488`, background `rgba(13, 148, 136, 0.12)`, text `#6EE7B7`. Prefix: `[✓]` or `CheckDotIcon`` | More than 2 days out |
+| `due-warning` | `**Warning Chip:** Border `1px solid #D97706`, background `rgba(217, 119, 6, 0.12)`, text `#FCD34D`. Prefix: `[~]` or `CalendarIcon`` | Less than 24 hours |
+| `due-overdue` | `**Critical Chip:** Border `1px solid #E11D48`, background `rgba(225, 29, 72, 0.12)`, text `#FDA4AF`. Prefix: `[!]` or `FlameIcon`. Shape: chamfered/angled icon frame.` | Past due |
+| `due-neutral` | `Same as safe` | Done (overrides date) |
 
 ## 3. Typography
 
