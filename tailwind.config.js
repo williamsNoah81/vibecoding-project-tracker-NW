@@ -1,60 +1,40 @@
 /** @type {import('tailwindcss').Config} */
-export default {
-  content: ['./index.html', './src/**/*.{js,jsx}'],
+module.exports = {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        background: '#0b1326',
-        'on-background': '#dae2fd',
+        brand: {
+          500: '#6366f1',
+          600: '#4f46e5',
+        },
         surface: {
-          DEFAULT: '#0b1326',
-          dim: '#0b1326',
-          bright: '#31394d',
-          variant: '#2d3449',
-          tint: '#c0c1ff',
-          container: {
-            lowest: '#060e20',
-            low: '#131b2e',
-            DEFAULT: '#171f33',
-            high: '#222a3d',
-            highest: '#2d3449',
-          },
+          canvas: '#0B0F19',
+          sidebar: '#0F1420',
+          column: '#141A28',
+          card: '#192033',
+          border: '#252E45',
         },
-        'on-surface': {
-          DEFAULT: '#dae2fd',
-          variant: '#c7c4d7',
+        feat: {
+          bg: '#1e1b4b',
+          text: '#a5b4fc',
+          border: '#6366f1',
         },
-        primary: {
-          DEFAULT: '#c0c1ff',
-          container: '#8083ff',
-        },
-        'on-primary': {
-          DEFAULT: '#1000a9',
-          container: '#0d0096',
-        },
-        secondary: {
-          DEFAULT: '#6bd8cb',
-          container: '#29a195',
-        },
-        tertiary: {
-          DEFAULT: '#ffb77d',
-          container: '#d97707',
-        },
-        error: {
-          DEFAULT: '#ffb4ab',
-          container: '#93000a',
-        },
-        'on-error-container': '#ffdad6',
-        outline: {
-          DEFAULT: '#908fa0',
-          variant: '#464554',
-        },
+        bug: {
+          bg: '#831843',
+          text: '#f472b6',
+          border: '#f43f5e',
+        }
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
-      },
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+      }
     },
   },
   plugins: [],
-};
+}
