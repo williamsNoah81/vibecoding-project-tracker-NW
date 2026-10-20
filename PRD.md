@@ -179,8 +179,26 @@ The hackathon is "done" when all 13 milestone tags are pushed to your repo and v
 
 - Features and bugs should be visually different, with either a tag or a colour
 - Tasks are colour coded based on proximity to deadline
-- 
+- Should have a consistent colour scheme
+- Simple UI with icon buttons and colour coordination
+- Main UI should be one board with four columns with four boxes for deliverabel links above
 
 ## Data Requirements
+
+- Projects have multiple tasks and team members along with a title
+- Tasks should have:
+  - title
+  - type (feature or bug)
+  - assignee
+  - due date
+  - prompt context (with tool)
+- Team members should have:
+ - Name
+ - Email
+ - GitHub account
+- Prompt context should have:
+  - Linked task
+  - main text
+  - related tool
 
 *PRD version: hackathon-starter v1 · maintained by Prof. Dr. Ignacio Alvarez*
