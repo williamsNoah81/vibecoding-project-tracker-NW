@@ -1,117 +1,131 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import Sidebar from './components/Sidebar';
+import Header from './components/Header';
+import Board from './components/Board';
+import TaskModal from './components/TaskModal';
+import DesignSystemModal from './components/DesignSystemModal';
 
-/**
- * Vibecoding Project Tracker — starter scaffold.
- *
- * This file is intentionally almost empty. The boilerplate (Vite, React,
- * Tailwind) is configured for you, plus a few shared constants and a
- * localStorage helper. Everything visible on screen, you build.
- *
- * Where to start (build sequence in Phase 3):
- *   - M4  data-model    : render the four columns and the task cards below.
- *   - M5  crud-modal    : add the "+" button modal and the edit-on-click modal.
- *   - M6  tag-style     : feature vs. bug color coding (uses DESIGN.md §2 colors).
- *   - M7  task-owner    : assignee badge + "Hand off to..." dropdown.
- *   - M8  due-tint      : color cards by due date (uses DESIGN.md §2 due-state colors).
- *   - M9  context       : a curated Context briefing field on the modal.
- *   - M10 copy-prompt   : a "Copy as Prompt Context" button that serializes the task + context.
- *   - M11 anchors       : the Anchor Board above the Kanban.
- *   - M12 secret-sauce  : the one open-ended thing that makes your tracker yours.
- *
- * Search the file for `TODO M<n>` to find the right hook for each milestone.
- */
+const INITIAL_TASKS = [
+  // To Do
+  { id: '1', title: 'Patch WebGL canvas memory leak during hot module reload', type: 'BUG', status: 'todo', dueDate: 'Due in 3h', assignee: 'Alex Rivera', assigneeInitials: 'AR', assigneeColor: 'bg-blue-600' },
+  { id: '2', title: 'Fix Supabase RLS recursion on auth token refresh', type: 'BUG', status: 'todo', dueDate: 'Due in 2d', assignee: 'Devon Vance', assigneeInitials: 'DV', assigneeColor: 'bg-emerald-600' },
+  { id: '3', title: 'Refactor prompt injection sanitization middleware', type: 'FEAT', status: 'todo', dueDate: 'Due in 5d', assignee: 'Maya Lin', assigneeInitials: 'ML', assigneeColor: 'bg-slate-600' },
+  { id: '4', title: 'Add automated Playwright smoke tests for vibe flow export', type: 'FEAT', status: 'todo', dueDate: 'Due in 7d', assignee: 'Kiran Patel', assigneeInitials: 'KP', assigneeColor: 'bg-purple-600' },
+  { id: '5', title: 'Configure Redis cluster vector caching for prompt memoization', type: 'FEAT', status: 'todo', dueDate: 'Due in 9d', assignee: 'Sarah Chen', assigneeInitials: 'SC', assigneeColor: 'bg-indigo-600' },
 
-/**
- * @typedef {Object} Task
- * @property {string} id
- * @property {string} title
- * @property {string} description
- * @property {'feature'|'bug'} type
- * @property {'todo'|'in-progress'|'review'|'done'} status
- * @property {string} assignee
- * @property {string|null} dueDate     ISO 'YYYY-MM-DD'
- * @property {string} createdDate      ISO 'YYYY-MM-DD'
- */
+  // In Progress
+  { id: '6', title: 'Implement Streaming SSE handler for Cursor chat protocol', type: 'FEAT', status: 'in_progress', dueDate: 'Due Today', assignee: 'Sarah Chen', assigneeInitials: 'SC', assigneeColor: 'bg-indigo-600' },
+  { id: '7', title: 'Scaffold shadcn/ui command menu with fuzzy search', type: 'FEAT', status: 'in_progress', dueDate: 'Due in 1d', assignee: 'Devon Vance', assigneeInitials: 'DV', assigneeColor: 'bg-emerald-600' },
+  { id: '8', title: 'Fix React SSR hydration mismatch on timestamp formatters', type: 'BUG', status: 'in_progress', dueDate: 'Due in 2d', assignee: 'Maya Lin', assigneeInitials: 'ML', assigneeColor: 'bg-slate-600' },
+  { id: '9', title: 'Implement matrix transform algebra for infinite 60fps canvas pan', type: 'FEAT', status: 'in_progress', dueDate: 'Due in 4d', assignee: 'Alex Rivera', assigneeInitials: 'AR', assigneeColor: 'bg-blue-600' },
 
-// The four columns of the board, in render order.
-// Use these IDs everywhere — do not invent new ones.
-export const STAGES = [
-  { id: 'todo',        label: 'To Do' },
-  { id: 'in-progress', label: 'In Progress' },
-  { id: 'review',      label: 'Review' },
-  { id: 'done',        label: 'Done' },
+  // Review
+  { id: '10', title: 'Repair dropped WebSocket reconnect heartbeat in multi-tab state', type: 'BUG', status: 'review', dueDate: 'Due in 4h', assignee: 'Kiran Patel', assigneeInitials: 'KP', assigneeColor: 'bg-purple-600' },
+  { id: '11', title: 'Synchronize WCAG AAA compliant semantic surface tokens', type: 'FEAT', status: 'review', dueDate: 'Due in 2d', assignee: 'Maya Lin', assigneeInitials: 'ML', assigneeColor: 'bg-slate-600' },
+  { id: '12', title: 'Standardize AST parser for user-defined prompt markdown interpolations', type: 'FEAT', status: 'review', dueDate: 'Due in 6d', assignee: 'Sarah Chen', assigneeInitials: 'SC', assigneeColor: 'bg-indigo-600' },
+
+  // Done
+  { id: '13', title: 'Migrate global store to Zustand v5 with local storage hydration', type: 'FEAT', status: 'done', dueDate: 'Done', statusBadge: 'Merged', assignee: 'Alex Rivera', assigneeInitials: 'AR', assigneeColor: 'bg-blue-600' },
+  { id: '14', title: 'Resolve double LLM invocation loop on hot debounce debounce', type: 'BUG', status: 'done', dueDate: 'Done', statusBadge: 'Fixed', assignee: 'Devon Vance', assigneeInitials: 'DV', assigneeColor: 'bg-emerald-600' },
+  { id: '15', title: 'Embed monaco-editor syntax highlighters for :cursorrules', type: 'FEAT', status: 'done', dueDate: 'Done', statusBadge: 'Done', assignee: 'Sarah Chen', assigneeInitials: 'SC', assigneeColor: 'bg-indigo-600' },
+  { id: '16', title: 'Add GitHub webhook triggers for branch CI workflow status', type: 'FEAT', status: 'done', dueDate: 'Done', statusBadge: 'Done', assignee: 'Kiran Patel', assigneeInitials: 'KP', assigneeColor: 'bg-purple-600' },
+  { id: '17', title: 'Eliminate memory thrashing during long synthetic prompt streams', type: 'BUG', status: 'done', dueDate: 'Done', statusBadge: 'Fixed', assignee: 'Alex Rivera', assigneeInitials: 'AR', assigneeColor: 'bg-blue-600' },
+  { id: '18', title: 'Initialize Tailwind theme configuration with high-density tokens', type: 'FEAT', status: 'done', dueDate: 'Done', statusBadge: 'Done', assignee: 'Maya Lin', assigneeInitials: 'ML', assigneeColor: 'bg-slate-600' },
 ];
 
-// Replace these placeholders with the three names from PRD §8 before M4.
-// They become the only valid values for `Task.assignee`.
-export const TEAM = ['Teammate A', 'Teammate B', 'Teammate C'];
-
-/**
- * A tiny localStorage hook — survives reloads, no library needed.
- *
- * Usage:
- *   const [tasks, setTasks] = useLocalStorage('vibetracker.tasks', []);
- */
-export function useLocalStorage(key, initialValue) {
-  const [value, setValue] = useState(() => {
-    try {
-      const raw = window.localStorage.getItem(key);
-      return raw != null ? JSON.parse(raw) : initialValue;
-    } catch {
-      return initialValue;
-    }
+export default function App() {
+  const [tasks, setTasks] = useState(() => {
+    const saved = localStorage.getItem('vibeboard_tasks');
+    return saved ? JSON.parse(saved) : INITIAL_TASKS;
   });
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [isDesignModalOpen, setIsDesignModalOpen] = useState(false);
+
   useEffect(() => {
-    try {
-      window.localStorage.setItem(key, JSON.stringify(value));
-    } catch {
-      /* quota or private-mode error — silently ignore for hackathon */
+    localStorage.setItem('vibeboard_tasks', JSON.stringify(tasks));
+  }, [tasks]);
+
+  const handleSaveTask = (taskData) => {
+    if (selectedTask) {
+      setTasks((prev) => prev.map((t) => (t.id === selectedTask.id ? { ...t, ...taskData } : t)));
+    } else {
+      const newTask = {
+        id: String(Date.now()),
+        ...taskData,
+      };
+      setTasks((prev) => [newTask, ...prev]);
     }
-  }, [key, value]);
+    setIsTaskModalOpen(false);
+    setSelectedTask(null);
+  };
 
-  return [value, setValue];
-}
+  const handleDeleteTask = (taskId) => {
+    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    setIsTaskModalOpen(false);
+    setSelectedTask(null);
+  };
 
-export default function App() {
-  // TODO M4 data-model:
-  //   const [tasks, setTasks] = useLocalStorage('vibetracker.tasks', [/* 3-4 seed tasks */]);
-  //
-  // TODO M5 crud-modal:
-  //   const [editing, setEditing] = useState(null);
-  //
-  // TODO M11 anchors:
-  //   const [anchors, setAnchors] = useLocalStorage('vibetracker.anchors', [...]);
+  const handleTaskMove = (taskId, newStatus) => {
+    setTasks((prev) =>
+      prev.map((t) => {
+        if (t.id === taskId) {
+          const updated = { ...t, status: newStatus };
+          if (newStatus === 'done' && !t.statusBadge) {
+            updated.statusBadge = t.type === 'BUG' ? 'Fixed' : 'Done';
+          }
+          return updated;
+        }
+        return t;
+      })
+    );
+  };
 
   return (
-    <div className="min-h-screen p-6">
-      <header className="mb-6 flex items-end justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">
-            Vibecoding Project Tracker
-          </h1>
-          <p className="text-sm text-slate-500">
-            {/* Replace this line with your team name from PRD §11. */}
-            Team starter
-          </p>
-        </div>
-      </header>
+    <div className="flex h-screen bg-[#0B0F19] text-slate-100 font-sans antialiased overflow-hidden select-none">
+      <Sidebar />
 
-      {/* TODO M11 anchors: render the Anchor Board (Presentation / Demo / Report / Documentation) above the board. */}
+      <div className="flex-1 flex flex-col min-w-0">
+        <Header
+          onOpenNewTaskModal={() => {
+            setSelectedTask(null);
+            setIsTaskModalOpen(true);
+          }}
+          onOpenDesignModal={() => setIsDesignModalOpen(true)}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
 
-      {/*
-        TODO M4 data-model:
-          Render a Kanban board with the four columns from STAGES.
-          Each column should display the tasks whose status matches its id.
-          Pre-populate 3-4 mock tasks so the board isn't empty on first load.
+        <main className="flex-1 overflow-hidden flex flex-col">
+          <Board
+            tasks={tasks}
+            searchQuery={searchQuery}
+            onCardClick={(task) => {
+              setSelectedTask(task);
+              setIsTaskModalOpen(true);
+            }}
+            onTaskMove={handleTaskMove}
+          />
+        </main>
+      </div>
 
-        TODO M5 crud-modal:
-          Add a "+" button that opens a modal with every Task field.
-          Clicking a card should open the same modal in edit mode.
-      */}
-      <main className="flex h-64 items-center justify-center rounded-lg border-2 border-dashed border-slate-300 text-slate-400">
-        Build the four-column board here · M4
-      </main>
+      <TaskModal
+        task={selectedTask}
+        isOpen={isTaskModalOpen}
+        onClose={() => {
+          setIsTaskModalOpen(false);
+          setSelectedTask(null);
+        }}
+        onSave={handleSaveTask}
+        onDelete={handleDeleteTask}
+      />
+
+      <DesignSystemModal
+        isOpen={isDesignModalOpen}
+        onClose={() => setIsDesignModalOpen(false)}
+      />
     </div>
   );
 }
