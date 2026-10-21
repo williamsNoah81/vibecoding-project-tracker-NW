@@ -9,7 +9,7 @@ export default function TaskCard({ task, onClick, onDragStart }) {
   const urgency = getDueUrgencyToken(task.dueDate, isDone);
 
   const handleCopyContext = (e) => {
-    e.stopPropagation(); // Prevent opening modal when clicking copy
+    e.stopPropagation();
     const briefText = formatTaskBrief(task);
     navigator.clipboard.writeText(briefText);
     setCopied(true);
@@ -23,7 +23,6 @@ export default function TaskCard({ task, onClick, onDragStart }) {
       onClick={() => onClick(task)}
       className={`group relative bg-[#192033] hover:bg-[#1e273e] border-y border-r border-[#252E45] hover:border-indigo-500/50 rounded-lg p-3 transition-all duration-150 cursor-pointer shadow-sm hover:shadow-md border-l-4 ${urgency.barClass}`}
     >
-      {/* Type & Dynamic Due Badge Row */}
       <div className="flex items-center justify-between mb-2.5 gap-2">
         <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${typeConfig.badge}`}>
           {typeConfig.label}
@@ -40,12 +39,10 @@ export default function TaskCard({ task, onClick, onDragStart }) {
         )}
       </div>
 
-      {/* Task Title */}
       <h3 className="text-xs font-semibold text-slate-100 leading-snug mb-3 group-hover:text-indigo-300 transition-colors">
         {task.title}
       </h3>
 
-      {/* Assignee & Copy Context Action Footer */}
       <div className="flex items-center justify-between pt-2 border-t border-[#252E45]/60">
         <div className="flex items-center space-x-2 min-w-0">
           <div className={`w-5 h-5 rounded-full ${task.assigneeColor || 'bg-indigo-600'} flex items-center justify-center text-[10px] font-bold text-white shrink-0`}>
@@ -56,18 +53,16 @@ export default function TaskCard({ task, onClick, onDragStart }) {
           </span>
         </div>
 
-        {/* Copy Context Button */}
+        {/* Micro Copy Button */}
         <button
           onClick={handleCopyContext}
           title="Copy prompt context for AI"
-          className="text-[10px] font-mono text-indigo-400 hover:text-indigo-300 bg-indigo-950/60 hover:bg-indigo-900/80 px-2 py-0.5 rounded border border-indigo-700/50 transition-colors flex items-center gap-1 shrink-0"
+          className="text-[9px] font-mono text-indigo-400 hover:text-indigo-300 bg-indigo-950/60 hover:bg-indigo-900 px-1.5 py-0.5 rounded border border-indigo-700/40 transition-colors shrink-0"
         >
           {copied ? (
-            <span className="text-emerald-400 font-bold">✓ Copied!</span>
+            <span className="text-emerald-400 font-bold">✓ Copied</span>
           ) : (
-            <>
-              <span>📋</span> Copy Context
-            </>
+            <span>📋 Copy</span>
           )}
         </button>
       </div>

@@ -179,48 +179,57 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
             </div>
           </div>
 
-          {/* AI Context Tool Selection & Copy Row */}
+          {/* AI Context Block */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <div className="flex items-center gap-2">
-                <label className="block text-xs font-medium text-slate-400">
-                  Prompt Context
-                </label>
-                {relativeUpdatedText && (
-                  <span className="text-[10px] font-mono text-indigo-400">
-                    · {relativeUpdatedText}
-                  </span>
-                )}
-              </div>
+              <label className="block text-xs font-medium text-slate-400">
+                Prompt Context
+              </label>
 
-              <button
-                type="button"
-                onClick={handleCopyBrief}
-                className="text-xs text-indigo-300 bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-700/60 px-2.5 py-1 rounded font-mono flex items-center gap-1 transition-colors"
-              >
-                {copied ? <span className="text-emerald-400 font-bold">✓ Copied to Clipboard!</span> : <span>📋 Copy Context</span>}
-              </button>
+              {relativeUpdatedText && (
+                <span className="text-[10px] font-mono text-indigo-400">
+                  {relativeUpdatedText}
+                </span>
+              )}
             </div>
 
             <textarea
-              rows="6"
+              rows="5"
               value={formData.promptContext}
               onChange={handleContextChange}
               className="w-full bg-[#0B0F19] text-xs text-slate-200 p-2.5 rounded border border-[#252E45] font-mono placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 leading-relaxed"
               placeholder="Paste AI prompts or technical specifications..."
             ></textarea>
 
-            <div className="mt-2 flex items-center justify-between">
-              <label className="text-xs text-slate-400">Optional AI Context Tool:</label>
-              <select
-                value={formData.contextTool}
-                onChange={(e) => setFormData({ ...formData, contextTool: e.target.value })}
-                className="bg-[#0B0F19] text-xs text-slate-200 px-3 py-1.5 rounded border border-[#252E45] focus:outline-none focus:border-indigo-500"
+            {/* Controls Below Textarea */}
+            <div className="mt-2 flex items-center justify-between gap-2">
+              <div className="flex items-center space-x-2">
+                <label className="text-[11px] text-slate-400">AI Tool:</label>
+                <select
+                  value={formData.contextTool}
+                  onChange={(e) => setFormData({ ...formData, contextTool: e.target.value })}
+                  className="bg-[#0B0F19] text-[11px] text-slate-200 px-2 py-1 rounded border border-[#252E45] focus:outline-none focus:border-indigo-500"
+                >
+                  {AI_TOOLS.map((tool) => (
+                    <option key={tool} value={tool}>{tool}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Smaller Copy Button Below Textbox */}
+              <button
+                type="button"
+                onClick={handleCopyBrief}
+                className="text-[10px] text-indigo-300 bg-indigo-950/70 hover:bg-indigo-900 border border-indigo-700/50 px-2 py-1 rounded font-mono flex items-center gap-1 transition-colors shrink-0"
               >
-                {AI_TOOLS.map((tool) => (
-                  <option key={tool} value={tool}>{tool}</option>
-                ))}
-              </select>
+                {copied ? (
+                  <span className="text-emerald-400 font-bold">✓ Copied!</span>
+                ) : (
+                  <>
+                    <span>📋</span> Copy Context
+                  </>
+                )}
+              </button>
             </div>
           </div>
 
