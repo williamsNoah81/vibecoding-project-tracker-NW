@@ -18,7 +18,7 @@ const CONTEXT_TEMPLATE = `## Context
 - What needs to be done next?`;
 
 /**
- * Helper to compute relative time string for context update timestamp.
+ * Calculates relative time string for context update timestamp.
  */
 function getRelativeTime(timestamp) {
   if (!timestamp) return null;
