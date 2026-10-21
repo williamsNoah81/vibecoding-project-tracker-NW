@@ -2,24 +2,34 @@ import React, { useState, useEffect } from 'react';
 import { ASSIGNEES } from '../theme';
 
 export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
+  // Returns current date/time formatted for <input type="datetime-local" />
+  const getDefaultDateTime = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 2); // Default to 2 days out
+    return d.toISOString().slice(0, 16);
+  };
+
   const [formData, setFormData] = useState({
     title: '',
     type: 'FEAT',
     status: 'todo',
-    dueDate: 'Due in 3d',
+    dueDate: getDefaultDateTime(),
     assignee: ASSIGNEES[0].name,
     promptContext: '',
   });
 
   useEffect(() => {
     if (task) {
-      setFormData(task);
+      setFormData({
+        ...task,
+        dueDate: task.dueDate ? new Date(task.dueDate).toISOString().slice(0, 16) : getDefaultDateTime(),
+      });
     } else {
       setFormData({
         title: '',
         type: 'FEAT',
         status: 'todo',
-        dueDate: 'Due in 3d',
+        dueDate: getDefaultDateTime(),
         assignee: ASSIGNEES[0].name,
         promptContext: '',
       });
@@ -103,14 +113,15 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
               </select>
             </div>
 
+            {/* Date & Time Picker */}
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Due Tag</label>
+              <label className="block text-xs font-medium text-slate-400 mb-1">Due Date & Time</label>
               <input
-                type="text"
+                type="datetime-local"
+                required
                 value={formData.dueDate}
                 onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                className="w-full bg-[#0B0F19] text-xs text-slate-200 p-2.5 rounded border border-[#252E45]"
-                placeholder="Due in 3h, Due Today..."
+                className="w-full bg-[#0B0F19] text-xs text-slate-200 p-2.5 rounded border border-[#252E45] focus:outline-none focus:border-indigo-500"
               />
             </div>
           </div>
@@ -149,7 +160,7 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
                 type="submit"
                 className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-xs font-medium"
               >
-                Save Changes
+                Save Task
               </button>
             </div>
           </div>

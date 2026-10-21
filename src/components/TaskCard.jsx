@@ -4,16 +4,16 @@ import { TASK_TYPES, getDueUrgencyToken } from '../theme';
 export default function TaskCard({ task, onClick, onDragStart }) {
   const typeConfig = TASK_TYPES[task.type] || TASK_TYPES.FEAT;
   const isDone = task.status === 'done';
-  const dueClass = getDueUrgencyToken(task.dueDate, isDone);
+  const urgency = getDueUrgencyToken(task.dueDate, isDone);
 
   return (
     <div
       draggable
       onDragStart={(e) => onDragStart(e, task.id)}
       onClick={() => onClick(task)}
-      className="group relative bg-[#192033] hover:bg-[#1e273e] border border-[#252E45] hover:border-indigo-500/50 rounded-lg p-3 transition-all duration-150 cursor-pointer shadow-sm hover:shadow-md"
+      className={`group relative bg-[#192033] hover:bg-[#1e273e] border-y border-r border-[#252E45] hover:border-indigo-500/50 rounded-lg p-3 transition-all duration-150 cursor-pointer shadow-sm hover:shadow-md border-l-4 ${urgency.barClass}`}
     >
-      {/* Type & Due Date Row */}
+      {/* Type & Dynamic Due Badge Row */}
       <div className="flex items-center justify-between mb-2.5 gap-2">
         <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${typeConfig.badge}`}>
           {typeConfig.label}
@@ -24,8 +24,8 @@ export default function TaskCard({ task, onClick, onDragStart }) {
             <span>✓</span> {task.statusBadge}
           </span>
         ) : (
-          <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${dueClass}`}>
-            ⏰ {task.dueDate}
+          <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${urgency.badgeClass}`}>
+            ⏰ {urgency.label}
           </span>
         )}
       </div>
