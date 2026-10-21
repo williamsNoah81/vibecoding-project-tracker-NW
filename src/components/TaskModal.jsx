@@ -184,7 +184,7 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
             <div className="flex items-center justify-between mb-1.5">
               <div className="flex items-center gap-2">
                 <label className="block text-xs font-medium text-slate-400">
-                  Prompt Context (Vibecoding Anchor)
+                  Prompt Context
                 </label>
                 {relativeUpdatedText && (
                   <span className="text-[10px] font-mono text-indigo-400">
