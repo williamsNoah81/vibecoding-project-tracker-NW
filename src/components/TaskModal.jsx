@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ASSIGNEES } from '../theme';
+import { formatTaskBrief } from '../utils/formatBrief';
 
 const AI_TOOLS = ['Claude', 'ChatGPT', 'Gemini', 'Cursor', 'Lovable', 'Replit', 'Other'];
 
@@ -17,9 +18,6 @@ const CONTEXT_TEMPLATE = `## Context
 **Pick up**
 - What needs to be done next?`;
 
-/**
- * Calculates relative time string for context update timestamp.
- */
 function getRelativeTime(timestamp) {
   if (!timestamp) return null;
   const elapsedMinutes = Math.floor((Date.now() - new Date(timestamp).getTime()) / (1000 * 60));
@@ -39,6 +37,7 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
     return d.toISOString().slice(0, 16);
   };
 
+  const [copied, setCopied] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     type: 'FEAT',
@@ -82,6 +81,13 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
       promptContext: newContext,
       contextUpdatedAt: new Date().toISOString(),
     }));
+  };
+
+  const handleCopyBrief = () => {
+    const briefText = formatTaskBrief(formData);
+    navigator.clipboard.writeText(briefText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const handleSubmit = (e) => {
@@ -173,18 +179,27 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
             </div>
           </div>
 
-          {/* AI Context Tool Selection & Header Row */}
+          {/* AI Context Tool Selection & Copy Row */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-xs font-medium text-slate-400">
-                Prompt Context (Vibecoding Anchor)
-              </label>
+              <div className="flex items-center gap-2">
+                <label className="block text-xs font-medium text-slate-400">
+                  Prompt Context (Vibecoding Anchor)
+                </label>
+                {relativeUpdatedText && (
+                  <span className="text-[10px] font-mono text-indigo-400">
+                    · {relativeUpdatedText}
+                  </span>
+                )}
+              </div>
 
-              {relativeUpdatedText && (
-                <span className="text-[10px] font-mono text-indigo-400">
-                  {relativeUpdatedText}
-                </span>
-              )}
+              <button
+                type="button"
+                onClick={handleCopyBrief}
+                className="text-xs text-indigo-300 bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-700/60 px-2.5 py-1 rounded font-mono flex items-center gap-1 transition-colors"
+              >
+                {copied ? <span className="text-emerald-400 font-bold">✓ Copied to Clipboard!</span> : <span>📋 Copy Context</span>}
+              </button>
             </div>
 
             <textarea
