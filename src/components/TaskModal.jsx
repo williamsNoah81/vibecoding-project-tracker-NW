@@ -1,11 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { ASSIGNEES } from '../theme';
 
+const AI_TOOLS = ['Claude', 'ChatGPT', 'Gemini', 'Cursor', 'Lovable', 'Replit', 'Other'];
+
+const CONTEXT_TEMPLATE = `## Context
+
+**Background**
+- Explain the task background here...
+
+**Constraints**
+- List technical constraints or rules...
+
+**Tried so far**
+- What approaches or prompts have been attempted?
+
+**Pick up**
+- What needs to be done next?`;
+
+/**
+ * Helper to compute relative time string for context update timestamp.
+ */
+function getRelativeTime(timestamp) {
+  if (!timestamp) return null;
+  const elapsedMinutes = Math.floor((Date.now() - new Date(timestamp).getTime()) / (1000 * 60));
+
+  if (elapsedMinutes < 1) return 'last updated just now';
+  if (elapsedMinutes < 60) return `last updated ${elapsedMinutes} m ago`;
+  const elapsedHours = Math.floor(elapsedMinutes / 60);
+  if (elapsedHours < 24) return `last updated ${elapsedHours} h ago`;
+  const elapsedDays = Math.floor(elapsedHours / 24);
+  return `last updated ${elapsedDays} d ago`;
+}
+
 export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
-  // Returns current date/time formatted for <input type="datetime-local" />
   const getDefaultDateTime = () => {
     const d = new Date();
-    d.setDate(d.getDate() + 2); // Default to 2 days out
+    d.setDate(d.getDate() + 2);
     return d.toISOString().slice(0, 16);
   };
 
@@ -15,7 +45,9 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
     status: 'todo',
     dueDate: getDefaultDateTime(),
     assignee: ASSIGNEES[0].name,
-    promptContext: '',
+    promptContext: CONTEXT_TEMPLATE,
+    contextTool: 'Claude',
+    contextUpdatedAt: null,
   });
 
   useEffect(() => {
@@ -23,6 +55,9 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
       setFormData({
         ...task,
         dueDate: task.dueDate ? new Date(task.dueDate).toISOString().slice(0, 16) : getDefaultDateTime(),
+        promptContext: task.promptContext ?? CONTEXT_TEMPLATE,
+        contextTool: task.contextTool || 'Claude',
+        contextUpdatedAt: task.contextUpdatedAt || null,
       });
     } else {
       setFormData({
@@ -31,12 +66,23 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
         status: 'todo',
         dueDate: getDefaultDateTime(),
         assignee: ASSIGNEES[0].name,
-        promptContext: '',
+        promptContext: CONTEXT_TEMPLATE,
+        contextTool: 'Claude',
+        contextUpdatedAt: null,
       });
     }
   }, [task, isOpen]);
 
   if (!isOpen) return null;
+
+  const handleContextChange = (e) => {
+    const newContext = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      promptContext: newContext,
+      contextUpdatedAt: new Date().toISOString(),
+    }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -47,6 +93,8 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
       assigneeColor: selectedAssignee.color,
     });
   };
+
+  const relativeUpdatedText = getRelativeTime(formData.contextUpdatedAt);
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -113,7 +161,6 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
               </select>
             </div>
 
-            {/* Date & Time Picker */}
             <div>
               <label className="block text-xs font-medium text-slate-400 mb-1">Due Date & Time</label>
               <input
@@ -126,15 +173,40 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
             </div>
           </div>
 
+          {/* AI Context Tool Selection & Header Row */}
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">Prompt Context (Vibecoding Anchor)</label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-medium text-slate-400">
+                Prompt Context (Vibecoding Anchor)
+              </label>
+
+              {relativeUpdatedText && (
+                <span className="text-[10px] font-mono text-indigo-400">
+                  {relativeUpdatedText}
+                </span>
+              )}
+            </div>
+
             <textarea
-              rows="3"
-              value={formData.promptContext || ''}
-              onChange={(e) => setFormData({ ...formData, promptContext: e.target.value })}
-              className="w-full bg-[#0B0F19] text-xs text-slate-200 p-2.5 rounded border border-[#252E45] font-mono placeholder:text-slate-600"
+              rows="6"
+              value={formData.promptContext}
+              onChange={handleContextChange}
+              className="w-full bg-[#0B0F19] text-xs text-slate-200 p-2.5 rounded border border-[#252E45] font-mono placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 leading-relaxed"
               placeholder="Paste AI prompts or technical specifications..."
             ></textarea>
+
+            <div className="mt-2 flex items-center justify-between">
+              <label className="text-xs text-slate-400">Optional AI Context Tool:</label>
+              <select
+                value={formData.contextTool}
+                onChange={(e) => setFormData({ ...formData, contextTool: e.target.value })}
+                className="bg-[#0B0F19] text-xs text-slate-200 px-3 py-1.5 rounded border border-[#252E45] focus:outline-none focus:border-indigo-500"
+              >
+                {AI_TOOLS.map((tool) => (
+                  <option key={tool} value={tool}>{tool}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="flex items-center justify-between pt-3 border-t border-[#252E45]">
