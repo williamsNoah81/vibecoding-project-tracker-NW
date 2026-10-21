@@ -1,22 +1,50 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-export default function Header({ onOpenNewTaskModal, onOpenDesignModal, searchQuery, setSearchQuery }) {
+export default function Header({ onOpenNewTaskModal, searchQuery, setSearchQuery }) {
+  const [projectTitle, setProjectTitle] = useState(() => {
+    return localStorage.getItem('vibeboard_project_title') || 'Synthetic Intelligence Layer';
+  });
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+
+  const handleTitleSave = () => {
+    setIsEditingTitle(false);
+    localStorage.setItem('vibeboard_project_title', projectTitle);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleTitleSave();
+    }
+  };
+
   return (
     <header className="h-16 border-b border-[#252E45] bg-[#0F1420] px-6 flex items-center justify-between shrink-0">
-      <div className="flex items-center space-x-6">
-        <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-          Project: <span className="text-indigo-400">Synthetic Intelligence Layer</span>
-        </h1>
-        <button
-          onClick={onOpenDesignModal}
-          className="text-xs px-2.5 py-1 rounded bg-[#192033] hover:bg-[#252E45] border border-[#252E45] text-indigo-300 transition-colors flex items-center gap-1.5"
-        >
-          <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
-          DESIGN.md System Tokens
-        </button>
+      {/* Editable Project Title */}
+      <div className="flex items-center space-x-2">
+        <span className="text-xl font-bold text-white tracking-tight">Project:</span>
+        {isEditingTitle ? (
+          <input
+            type="text"
+            autoFocus
+            value={projectTitle}
+            onChange={(e) => setProjectTitle(e.target.value)}
+            onBlur={handleTitleSave}
+            onKeyDown={handleKeyDown}
+            className="bg-[#0B0F19] text-xl font-bold text-indigo-400 px-2 py-0.5 rounded border border-indigo-500 focus:outline-none tracking-tight"
+          />
+        ) : (
+          <h1
+            onClick={() => setIsEditingTitle(true)}
+            title="Click to edit project title"
+            className="text-xl font-bold text-indigo-400 tracking-tight hover:text-indigo-300 hover:underline cursor-pointer transition-colors"
+          >
+            {projectTitle}
+          </h1>
+        )}
       </div>
 
       <div className="flex items-center space-x-4">
+        {/* Search Field */}
         <div className="relative">
           <input
             type="text"
@@ -30,6 +58,7 @@ export default function Header({ onOpenNewTaskModal, onOpenDesignModal, searchQu
           </svg>
         </div>
 
+        {/* New Task Button */}
         <button
           onClick={onOpenNewTaskModal}
           className="bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs px-4 py-2 rounded shadow-lg shadow-indigo-600/20 transition-all flex items-center space-x-1"

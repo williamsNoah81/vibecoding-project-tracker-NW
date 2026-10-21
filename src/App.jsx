@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Board from './components/Board';
+import ProjectDeliverables from './components/ProjectDeliverables';
 import TaskModal from './components/TaskModal';
-import DesignSystemModal from './components/DesignSystemModal';
 import { getTasksFromDB, saveTaskToDB, deleteTaskFromDB } from './db';
 
 export default function App() {
@@ -14,9 +14,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTask, setSelectedTask] = useState(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const [isDesignModalOpen, setIsDesignModalOpen] = useState(false);
 
-  // Load tasks from local database on mount
   useEffect(() => {
     async function loadTasks() {
       try {
@@ -86,10 +84,12 @@ export default function App() {
             setSelectedTask(null);
             setIsTaskModalOpen(true);
           }}
-          onOpenDesignModal={() => setIsDesignModalOpen(true)}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
         />
+
+        {/* Deliverable Anchor Banner Above Board */}
+        <ProjectDeliverables />
 
         <main className="flex-1 overflow-hidden flex flex-col">
           {isLoading ? (
@@ -119,11 +119,6 @@ export default function App() {
         }}
         onSave={handleSaveTask}
         onDelete={handleDeleteTask}
-      />
-
-      <DesignSystemModal
-        isOpen={isDesignModalOpen}
-        onClose={() => setIsDesignModalOpen(false)}
       />
     </div>
   );
