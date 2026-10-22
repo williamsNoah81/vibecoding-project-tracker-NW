@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { ASSIGNEES } from '../theme';
 import { formatTaskBrief } from '../utils/formatBrief';
 
 const AI_TOOLS = ['Claude', 'ChatGPT', 'Gemini', 'Cursor', 'Lovable', 'Replit', 'Other'];
@@ -30,12 +29,14 @@ function getRelativeTime(timestamp) {
   return `last updated ${elapsedDays} d ago`;
 }
 
-export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
+export default function TaskModal({ task, teamMembers, isOpen, onClose, onSave, onDelete }) {
   const getDefaultDateTime = () => {
     const d = new Date();
     d.setDate(d.getDate() + 2);
     return d.toISOString().slice(0, 16);
   };
+
+  const defaultAssignee = teamMembers && teamMembers.length > 0 ? teamMembers[0].name : '';
 
   const [copied, setCopied] = useState(false);
   const [formData, setFormData] = useState({
@@ -43,7 +44,7 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
     type: 'FEAT',
     status: 'todo',
     dueDate: getDefaultDateTime(),
-    assignee: ASSIGNEES[0].name,
+    assignee: defaultAssignee,
     promptContext: CONTEXT_TEMPLATE,
     contextTool: 'Claude',
     contextUpdatedAt: null,
@@ -57,6 +58,7 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
         promptContext: task.promptContext ?? CONTEXT_TEMPLATE,
         contextTool: task.contextTool || 'Claude',
         contextUpdatedAt: task.contextUpdatedAt || null,
+        assignee: task.assignee || defaultAssignee,
       });
     } else {
       setFormData({
@@ -64,13 +66,13 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
         type: 'FEAT',
         status: 'todo',
         dueDate: getDefaultDateTime(),
-        assignee: ASSIGNEES[0].name,
+        assignee: defaultAssignee,
         promptContext: CONTEXT_TEMPLATE,
         contextTool: 'Claude',
         contextUpdatedAt: null,
       });
     }
-  }, [task, isOpen]);
+  }, [task, isOpen, teamMembers]);
 
   if (!isOpen) return null;
 
@@ -92,7 +94,7 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const selectedAssignee = ASSIGNEES.find((a) => a.name === formData.assignee) || ASSIGNEES[0];
+    const selectedAssignee = teamMembers.find((a) => a.name === formData.assignee) || teamMembers[0];
     onSave({
       ...formData,
       assigneeInitials: selectedAssignee.initials,
@@ -161,7 +163,7 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
                 onChange={(e) => setFormData({ ...formData, assignee: e.target.value })}
                 className="w-full bg-[#0B0F19] text-xs text-slate-200 p-2.5 rounded border border-[#252E45]"
               >
-                {ASSIGNEES.map((a) => (
+                {teamMembers.map((a) => (
                   <option key={a.name} value={a.name}>{a.name} ({a.initials})</option>
                 ))}
               </select>
@@ -179,11 +181,10 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
             </div>
           </div>
 
-          {/* AI Context Block */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="block text-xs font-medium text-slate-400">
-                Prompt Context
+                Prompt Context (Vibecoding Anchor)
               </label>
 
               {relativeUpdatedText && (
@@ -201,7 +202,6 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
               placeholder="Paste AI prompts or technical specifications..."
             ></textarea>
 
-            {/* Controls Below Textarea */}
             <div className="mt-2 flex items-center justify-between gap-2">
               <div className="flex items-center space-x-2">
                 <label className="text-[11px] text-slate-400">AI Tool:</label>
@@ -216,19 +216,12 @@ export default function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
                 </select>
               </div>
 
-              {/* Smaller Copy Button Below Textbox */}
               <button
                 type="button"
                 onClick={handleCopyBrief}
                 className="text-[10px] text-indigo-300 bg-indigo-950/70 hover:bg-indigo-900 border border-indigo-700/50 px-2 py-1 rounded font-mono flex items-center gap-1 transition-colors shrink-0"
               >
-                {copied ? (
-                  <span className="text-emerald-400 font-bold">✓ Copied!</span>
-                ) : (
-                  <>
-                    <span>📋</span> Copy Context
-                  </>
-                )}
+                {copied ? <span className="text-emerald-400 font-bold">✓ Copied!</span> : <span>📋 Copy Context</span>}
               </button>
             </div>
           </div>

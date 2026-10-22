@@ -1,12 +1,17 @@
-// Design System Token Helper Constants
+// src/theme.js
 
-export const ASSIGNEES = [
-  { name: 'George Clooney', initials: 'GC', color: 'bg-blue-600' },
-  { name: 'Meryl Streep', initials: 'MS', color: 'bg-indigo-600' },
-  { name: 'Bill Murray', initials: 'BM', color: 'bg-emerald-600' },
-  { name: 'Jason Swartzman', initials: 'JS', color: 'bg-purple-600' },
-  { name: 'Owen Wilson', initials: 'OW', color: 'bg-slate-600' },
+export const DEFAULT_ASSIGNEES = [
+  { name: 'Alex Rivera', initials: 'AR', color: 'bg-blue-600' },
+  { name: 'Sarah Chen', initials: 'SC', color: 'bg-indigo-600' },
+  { name: 'Devon Vance', initials: 'DV', color: 'bg-emerald-600' },
+  { name: 'Kiran Patel', initials: 'KP', color: 'bg-purple-600' },
+  { name: 'Maya Lin', initials: 'ML', color: 'bg-slate-600' },
 ];
+
+export function getStoredTeamMembers() {
+  const saved = localStorage.getItem('vibeboard_team');
+  return saved ? JSON.parse(saved) : DEFAULT_ASSIGNEES;
+}
 
 export const COLUMNS = [
   { id: 'todo', title: 'To do', countColor: 'text-slate-400' },
@@ -19,18 +24,13 @@ export const TASK_TYPES = {
   FEAT: {
     label: 'FEAT',
     badge: 'bg-indigo-950/90 text-indigo-300 border-indigo-700/60',
-    bar: 'bg-indigo-500',
   },
   BUG: {
     label: 'BUG',
     badge: 'bg-rose-950/90 text-rose-300 border-rose-700/60',
-    bar: 'bg-rose-500',
   }
 };
 
-/**
- * Calculates due date status and relative label based on ISO timestamp/date input.
- */
 export function getDueUrgencyToken(dueDateISO, isDone = false) {
   if (isDone) {
     return {
@@ -52,7 +52,6 @@ export function getDueUrgencyToken(dueDateISO, isDone = false) {
   const now = Date.now();
   const diffHours = (dueTime - now) / (1000 * 60 * 60);
 
-  // Past Due or critical (< 4 hours) -> RED
   if (diffHours < 4) {
     let label = 'Past Due';
     if (diffHours > 0) {
@@ -70,7 +69,6 @@ export function getDueUrgencyToken(dueDateISO, isDone = false) {
     };
   }
 
-  // Under 24 hours -> ORANGE
   if (diffHours < 24) {
     return {
       label: diffHours <= 12 ? `Due in ${Math.ceil(diffHours)}h` : 'Due Today',
@@ -79,7 +77,6 @@ export function getDueUrgencyToken(dueDateISO, isDone = false) {
     };
   }
 
-  // Over 24 hours (Over a day away) -> GREEN
   const daysAway = Math.ceil(diffHours / 24);
   return {
     label: `Due in ${daysAway}d`,

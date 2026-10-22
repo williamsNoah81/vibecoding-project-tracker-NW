@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 
 export default function Header({ onOpenNewTaskModal, searchQuery, setSearchQuery }) {
   const [projectTitle, setProjectTitle] = useState(() => {
-    return localStorage.getItem('vibeboard_project_title') || 'Synthetic Intelligence Layer';
+    return localStorage.getItem('vibeboard_project_title') || 'New Project';
   });
   const [isEditingTitle, setIsEditingTitle] = useState(false);
 
   const handleTitleSave = () => {
     setIsEditingTitle(false);
-    localStorage.setItem('vibeboard_project_title', projectTitle);
+    const finalTitle = projectTitle.trim() || 'New Project';
+    setProjectTitle(finalTitle);
+    localStorage.setItem('vibeboard_project_title', finalTitle);
   };
 
   const handleKeyDown = (e) => {

@@ -5,15 +5,24 @@ import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Board from './components/Board';
 import ProjectDeliverables from './components/ProjectDeliverables';
+import SettingsView from './components/SettingsView';
 import TaskModal from './components/TaskModal';
 import { getTasksFromDB, saveTaskToDB, deleteTaskFromDB } from './db';
+import { getStoredTeamMembers } from './theme';
 
 export default function App() {
+  const [activeTab, setActiveTab] = useState('board');
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTask, setSelectedTask] = useState(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+
+  const [teamMembers, setTeamMembers] = useState(getStoredTeamMembers);
+
+  useEffect(() => {
+    localStorage.setItem('vibeboard_team', JSON.stringify(teamMembers));
+  }, [teamMembers]);
 
   useEffect(() => {
     async function loadTasks() {
@@ -76,7 +85,7 @@ export default function App() {
 
   return (
     <div className="flex h-screen bg-[#0B0F19] text-slate-100 font-sans antialiased overflow-hidden select-none">
-      <Sidebar />
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <div className="flex-1 flex flex-col min-w-0">
         <Header
@@ -88,30 +97,35 @@ export default function App() {
           setSearchQuery={setSearchQuery}
         />
 
-        {/* Deliverable Anchor Banner Above Board */}
-        <ProjectDeliverables />
-
-        <main className="flex-1 overflow-hidden flex flex-col">
-          {isLoading ? (
-            <div className="flex-1 flex items-center justify-center text-xs font-mono text-indigo-400">
-              <span className="animate-pulse">Loading database...</span>
-            </div>
-          ) : (
-            <Board
-              tasks={tasks}
-              searchQuery={searchQuery}
-              onCardClick={(task) => {
-                setSelectedTask(task);
-                setIsTaskModalOpen(true);
-              }}
-              onTaskMove={handleTaskMove}
-            />
-          )}
-        </main>
+        {activeTab === 'board' ? (
+          <>
+            <ProjectDeliverables />
+            <main className="flex-1 overflow-hidden flex flex-col">
+              {isLoading ? (
+                <div className="flex-1 flex items-center justify-center text-xs font-mono text-indigo-400">
+                  <span className="animate-pulse">Loading database...</span>
+                </div>
+              ) : (
+                <Board
+                  tasks={tasks}
+                  searchQuery={searchQuery}
+                  onCardClick={(task) => {
+                    setSelectedTask(task);
+                    setIsTaskModalOpen(true);
+                  }}
+                  onTaskMove={handleTaskMove}
+                />
+              )}
+            </main>
+          </>
+        ) : (
+          <SettingsView teamMembers={teamMembers} setTeamMembers={setTeamMembers} />
+        )}
       </div>
 
       <TaskModal
         task={selectedTask}
+        teamMembers={teamMembers}
         isOpen={isTaskModalOpen}
         onClose={() => {
           setIsTaskModalOpen(false);
