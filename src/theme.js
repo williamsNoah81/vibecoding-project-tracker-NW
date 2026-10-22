@@ -1,11 +1,11 @@
 // src/theme.js
 
 export const DEFAULT_ASSIGNEES = [
-  { name: 'Alex Rivera', initials: 'AR', color: 'bg-blue-600' },
-  { name: 'Sarah Chen', initials: 'SC', color: 'bg-indigo-600' },
-  { name: 'Devon Vance', initials: 'DV', color: 'bg-emerald-600' },
-  { name: 'Kiran Patel', initials: 'KP', color: 'bg-purple-600' },
-  { name: 'Maya Lin', initials: 'ML', color: 'bg-slate-600' },
+  { name: 'George Clooney', initials: 'GC', color: 'bg-blue-600' },
+  { name: 'Meryl Streep', initials: 'MS', color: 'bg-indigo-600' },
+  { name: 'Jason Schwartzman', initials: 'JS', color: 'bg-emerald-600' },
+  { name: 'Bill Murray', initials: 'BM', color: 'bg-purple-600' },
+  { name: 'Owen Wilson', initials: 'OW', color: 'bg-slate-600' },
 ];
 
 export function getStoredTeamMembers() {
